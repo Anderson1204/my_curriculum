@@ -1,1 +1,1 @@
-# AIDM7350_assignment
+# my curriculum
