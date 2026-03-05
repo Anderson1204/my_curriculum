@@ -4,11 +4,622 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <title>Graduation Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Graduation Project · 图片点击放大</title>
+    <style>
+        
+        /* 全局增强 */
+        .background-block {
+            background: linear-gradient(145deg, #D9CBBE 0%, #c9b9aa 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 装饰性背景元素 */
+        .background-block::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .background-block::after {
+            content: "";
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* 让project-container保持纵向，项目介绍在上方 */
+        .project-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            gap: 60px;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 项目介绍卡片 */
+        .project-text-card {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.3s ease;
+        }
+        
+        .project-text-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .project-text-card h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .project-text-card h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #000, #555);
+            border-radius: 2px;
+        }
+        
+        .project-text-card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+            text-align: justify;
+            font-weight: 400;
+        }
+
+        /* meta-note  */
+        .meta-note {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #666;
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-note strong {
+            color: #000;
+            font-weight: 600;
+            background: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* ===== 左右介绍栏区域（向中靠拢）===== */
+        .sidebars-container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 40px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* 左侧栏样式  */
+        .sidebar-left {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 30px 25px;
+            border-radius: 28px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            height: fit-content;
+            flex: 1 1 300px;
+            max-width: 400px;
+        }
+        
+        .sidebar-left:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.97);
+        }
+
+        /* ===== 右侧栏 - 图片墙 ===== */
+        .sidebar-right {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 30px 25px;
+            border-radius: 28px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            height: fit-content;
+            flex: 1 1 300px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-right:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.97);
+        }
+
+        /* 右侧栏标题 */
+        .sidebar-right h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+            border-left: 6px solid #000;
+            padding-left: 18px;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        /* 左侧栏标题 */
+        .sidebar-left h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+            border-left: 6px solid #000;
+            padding-left: 18px;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        /* 左侧栏列表样式 */
+        .sidebar-left ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+        }
+
+        .sidebar-left li {
+            font-size: 1.05rem;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 10px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .sidebar-left li:hover {
+            transform: translateX(5px);
+            color: #000;
+            border-bottom-color: #000;
+        }
+
+        .sidebar-left li::before {
+            content: "✨";
+            color: #000;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* 左侧栏底部装饰块 */
+        .sidebar-footer {
+            margin-top: 25px;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+            border-radius: 40px;
+            padding: 12px 18px;
+            text-align: center;
+            color: #222;
+            border: 1px solid #d0d0d0;
+            font-weight: 600;
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.8), 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        /* ===== 图片墙样式 ===== */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            border-color: #000;
+            z-index: 5;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 20px 10px 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .gallery-item:hover .gallery-caption {
+            opacity: 1;
+        }
+        
+        /* 特色视频样式 - 新增 */
+        .featured-video {
+            margin-top: 10px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            aspect-ratio: 16 / 9;
+            border: 2px solid #fff;
+            transition: all 0.3s ease;
+            background: #000;
+        }
+        
+        .featured-video:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+            border-color: #000;
+        }
+        
+        .featured-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .video-caption {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .image-credit {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px dashed #aaa;
+        }
+
+        /* 左侧栏小字描述 */
+        .sidebar-note {
+            font-size: 0.95rem;
+            color: #555;
+            margin-top: 18px;
+            font-style: italic;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px dashed #aaa;
+        }
+
+        /* ===== 视频底部模块 ===== */
+        .video-bottom-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* 视频卡片 */
+        .project-video-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            transition: all 0.4s ease;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .project-video-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.3);
+            border-color: #fff;
+        }
+
+        .project-video-card video {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        
+        .project-video-card video:hover {
+            transform: scale(1.005);
+        }
+
+        /* ===== 灯箱样式 ===== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid white;
+        }
+        
+        .lightbox-caption {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 50px;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .lightbox-nav.prev {
+            left: 30px;
+        }
+        
+        .lightbox-nav.next {
+            right: 30px;
+        }
+        
+        .lightbox-nav.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            .lightbox-nav {
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .lightbox-close {
+                top: 15px;
+                right: 15px;
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .lightbox-caption {
+                font-size: 1rem;
+                padding: 8px 20px;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 900px) {
+            .sidebars-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            
+            .sidebar-left, .sidebar-right {
+                width: 100%;
+                max-width: 600px;
+            }
+            
+            .project-text-card {
+                padding: 30px 25px;
+            }
+            
+            .project-text-card h1 {
+                font-size: 2.5rem;
+            }
+            
+            .project-video-card {
+                max-width: 95%;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .project-text-card h1 {
+                font-size: 2rem;
+            }
+            
+            .meta-note {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .sidebar-left h2, .sidebar-right h2 {
+                font-size: 1.7rem;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 联系信息 */
+        .contact-info {
+            margin-top: 0px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 0;
+        }
+        
+        /* 导航栏微调 */
+        .navbar {
+            background-color: #F0E3D7;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .hire-btn {
+            background: #000;
+            border-radius: 30px;
+            padding: 10px 25px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        
+        .hire-btn:hover {
+            background: #222;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body>
-    <!-- navi -->
+    <!-- 导航栏 -->
     <nav class="navbar">
         <div class="logo">🖥 My Personal Website</div>
         <ul class="nav-links">
@@ -20,39 +631,223 @@
         <a href="#" class="hire-btn">Hire Me</a>
     </nav>
 
-    <!-- Graduation Project Content -->
+    <!-- Graduation Project 区块 -->
     <section class="graduation-project background-block">
+        <!-- 外层容器纵向 -->
         <div class="project-container">
             
+            <!-- 上方：项目介绍卡片 -->
             <div class="project-text-card">
                 <h1>My Graduation Project</h1>
                 <p>
-                    This study aims to deeply analyze the entire production process of promotional short films from design to realization, comprehensively examine how to plan content and build narrative structure around the core theme of the video, explore the technical means of generating video special effects, analyze the application of non-linear editing in video creation, evaluate the technical strategy of seamless integration of virtual scenes and real scenes, and the cutting-edge technical practice of 3D animation production. Through this series of professional production steps and technical applications, it aims to create a visually fascinating, auditory shocking, and themed promotional short film.
+                    "The Chinese Dream" is a visual feast that transcends time and space, blending 3D animation, live-action footage, and ink-wash painting styles. The film embarks from the ink-washed river of history, traversing through to the fast-paced modern era, showcasing China's iconic achievements one by one. At its climax, a Chinese dragon soars into the sky, symbolizing the nation's ascent and heralding a future of boundless brightness and ever-growing prosperity.
                 </p>
+                <p>
+                    《中国梦宣传短片》融合三维动画、实拍摄影与水墨风，演绎一场跨越时空的视觉盛宴。影片从水墨晕染的历史长河出发，穿越至高速发展的现代，将中国的标志性成就一一呈现。高潮之处，中国龙破空而出，象征着中华腾飞之势，寓意着未来无限光明，越来越好。
+                </p>
+                <!-- 版权信息 -->
+                <div class="meta-note">
+                    <strong>Copyright © 2024 by Wang Yi-Hsiang</strong>
+                </div>
             </div>
 
-            <!-- 右侧视频卡片 -->
-            <div class="project-video-card">
-                <video controls>
-                    <source src="video\graduation-project.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+            <!-- 中间：左右介绍栏 (左侧文字，右侧图片) -->
+            <div class="sidebars-container">
+                
+                <!-- 左侧栏：技术亮点 (保持不变) -->
+                <div class="sidebar-left">
+                    <h2>技术亮点</h2>
+                    <ul>
+                        <li>虚拟与实景无缝融合</li>
+                        <li>三维动画与水墨风动画</li>
+                        <li>洋面及Principled Volume的应用</li>
+                        <li>火焰及烟雾粒子特效制作</li>
+                        <li>后期合成与调色</li>
+                        <li>AI模仿与配音</li>
+                    </ul>
+                    <div class="sidebar-footer">
+                        🎬 整个项目由我本人独立完成
+                    </div>                   
+                </div>
+
+                <!-- 右侧栏：图片展示区 (带点击放大功能) -->
+                <div class="sidebar-right">
+                    <h2>细节呈现</h2>
+                    
+                    <!-- 图片网格 - 2x2 布局，点击可放大 -->
+                    <div class="image-gallery" id="imageGallery">
+                        <div class="gallery-item" data-index="0">
+                            <img src="jpg/洋面.png" alt="洋面模拟">
+                            <div class="gallery-caption">洋面模拟</div>
+                        </div>
+                        <div class="gallery-item" data-index="1">
+                            <img src="jpg/粒子系统.png" alt="粒子系统">
+                            <div class="gallery-caption">粒子系统</div>
+                        </div>
+                        <div class="gallery-item" data-index="2">
+                            <img src="jpg/烟雾火焰模拟.png" alt="烟雾火焰模拟">
+                            <div class="gallery-caption">烟雾火焰模拟</div>
+                        </div>
+                        <div class="gallery-item" data-index="3">
+                            <img src="jpg/vfx合成.png" alt="VFX合成">
+                            <div class="gallery-caption">VFX合成</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 特色视频 -->
+                    <div class="featured-video" id="featuredVideo">
+                        <video controls>
+                            <source src="video/花絮6.10.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-caption">渲染片段展示</div>
+                    </div>
+
+                    <div class="image-credit">
+                        📸 点击可放大查看，下方展示项目成果
+                    </div>
+                </div> <!-- sidebar-right 结束 -->
+            </div> <!-- sidebars-container 结束 -->
+
+            <!-- 底部：视频模块 (居中) -->
+            <div class="video-bottom-section">
+                <div class="project-video-card">
+                    <video controls>
+                        <source src="video/graduation-project.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
             </div>
-        </div>
+        </div> <!-- project-container 结束 -->
     </section>
 
     <!-- Contact Info -->
     <div id="contact-info" class="contact-info">
-        <p>📧 Email: 24466034@life.hkbu.edu.hk</p>
-        <p>📞 Phone: +852 59562006</p>
-        <p>📍 Location: Hong Kong Baptist University</p>
+        <p>📧 Email: wangyihsiang01@163.com</p>
+        <p>📞 Phone: +86 15622856590</p>
+        <p>📍 Location: Shenzhen/Beijing</p>
+    </div>
+
+    <!-- 灯箱组件 -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-close" id="lightboxClose">&times;</div>
+        <div class="lightbox-nav prev" id="lightboxPrev">&#10094;</div>
+        <div class="lightbox-nav next" id="lightboxNext">&#10095;</div>
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightboxImage" src="" alt="">
+        </div>
+        <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
 
     <script>
+        // 平滑滚动
         document.querySelector('.nav-links a[href="#contact-info"]').addEventListener('click', function (e) {
             e.preventDefault(); 
             document.getElementById('contact-info').scrollIntoView({
                 behavior: 'smooth' 
+            });
+        });
+
+        // ===== 图片点击放大灯箱效果 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有图片元素
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const featuredVideo = document.getElementById('featuredVideo');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightboxImage');
+            const lightboxCaption = document.getElementById('lightboxCaption');
+            const lightboxClose = document.getElementById('lightboxClose');
+            const lightboxPrev = document.getElementById('lightboxPrev');
+            const lightboxNext = document.getElementById('lightboxNext');
+            
+            // 收集所有图片数据（只有网格图片，不包括视频）
+            const images = [];
+            
+            // 添加网格图片
+            galleryItems.forEach((item, index) => {
+                const img = item.querySelector('img');
+                const caption = item.querySelector('.gallery-caption').textContent;
+                images.push({
+                    src: img.src,
+                    alt: img.alt,
+                    caption: caption
+                });
+                
+                // 添加点击事件
+                item.addEventListener('click', function() {
+                    openLightbox(index);
+                });
+            });
+            
+            // 注意：视频不加入灯箱图片集合
+            
+            let currentIndex = 0;
+            
+            // 打开灯箱
+            function openLightbox(index) {
+                currentIndex = index;
+                updateLightboxImage();
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // 禁止背景滚动
+            }
+            
+            // 关闭灯箱
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = ''; // 恢复背景滚动
+            }
+            
+            // 更新灯箱图片
+            function updateLightboxImage() {
+                const image = images[currentIndex];
+                lightboxImage.src = image.src;
+                lightboxImage.alt = image.alt;
+                lightboxCaption.textContent = image.caption;
+                
+                // 更新导航按钮状态
+                lightboxPrev.classList.toggle('disabled', currentIndex === 0);
+                lightboxNext.classList.toggle('disabled', currentIndex === images.length - 1);
+            }
+            
+            // 上一张
+            function prevImage() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateLightboxImage();
+                }
+            }
+            
+            // 下一张
+            function nextImage() {
+                if (currentIndex < images.length - 1) {
+                    currentIndex++;
+                    updateLightboxImage();
+                }
+            }
+            
+            // 事件监听
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightboxPrev.addEventListener('click', prevImage);
+            lightboxNext.addEventListener('click', nextImage);
+            
+            // 点击背景关闭
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+            
+            // 键盘事件
+            document.addEventListener('keydown', function(e) {
+                if (!lightbox.classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    prevImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
             });
         });
     </script>

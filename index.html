@@ -4,8 +4,350 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <title>Personal Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Personal Portfolio · 点击查看效果</title>
+    <style>
+        /* 保留原有样式，添加作品展示区域样式 */
+        
+        /* 作品展示区域 */
+        .showcase-section {
+            padding: 80px 20px;
+            background: linear-gradient(145deg, #f8f8f8 0%, #ffffff 100%);
+            position: relative;
+        }
+        
+        .showcase-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            color: #1a1a1a;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .showcase-title::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #000, #888);
+            border-radius: 2px;
+        }
+        
+        .showcase-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 展示卡片 - 可用于图片或视频 */
+        .showcase-card {
+            background: #fff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 4 / 3;
+        }
+        
+        .showcase-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 图片样式 */
+        .showcase-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .showcase-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* 视频样式 */
+        .showcase-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* 卡片覆盖层 - 显示标题 */
+        .showcase-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 30px 15px 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .showcase-card:hover .showcase-overlay {
+            transform: translateY(0);
+        }
+        
+        .showcase-overlay h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .showcase-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* 标签样式 */
+        .showcase-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.3);
+            z-index: 2;
+        }
+        
+        /* 播放图标 - 用于视频卡片 */
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 3;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .showcase-card:hover .play-icon {
+            opacity: 1;
+        }
+        
+        /* ===== 灯箱样式（图片放大）===== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid white;
+        }
+        
+        .lightbox-caption {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        /* ===== 视频弹出层样式 ===== */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        
+        .video-modal.active {
+            display: flex;
+        }
+        
+        .video-modal-content {
+            position: relative;
+            width: 80vw;
+            max-width: 1000px;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 3px solid white;
+        }
+        
+        .video-modal video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+        
+        .video-modal-caption {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        
+        .video-modal-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+        
+        .video-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .video-modal-content {
+                width: 95vw;
+            }
+            .lightbox-close, .video-modal-close {
+                top: 15px;
+                right: 15px;
+                font-size: 30px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1000px) {
+            .showcase-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .showcase-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .showcase-title {
+                font-size: 2rem;
+            }
+        }
+        
+        /* 确保原有样式不受影响 */
+        .software-container {
+            grid-template-columns: repeat(8, 1fr);
+        }
+        
+        @media (max-width: 1200px) {
+            .software-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 800px) {
+            .software-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -24,8 +366,14 @@
     <!-- intro -->
     <section class="intro">
         <div class="intro-text">
-            <h1><em>"Render the Present in 3D: Seize the Day"</em><br><em>Wang Yi-Hsiang</em></h1>
-            <p>Welcome to my personal portfolio website! I’m a passionate 3D designer dedicated to crafting immersive, visually stunning experiences.<br> For me, every moment is a chance to render the present in 3D and seize the day through creativity and innovation.</p>
+            <h1><em>"Render the Present in 3D: Seize the Day"</em><br><em>Wang Yi-Hsiang</em></h1>            
+            <div class="subtitle-zh"><em>「三维渲染此刻，光影定格瞬间」</em><br><em>王奕翔</em>
+            </div>
+            <br>
+            <p>Welcome to my personal portfolio website! I'm a passionate 3D designer dedicated to crafting immersive, visually stunning experiences.<br> For me, every moment is a chance to render the present in 3D and seize the day through creativity and innovation.
+            <br>I graduated from Beijing University of Technology with a bachelor's degree in Digital Media Technology, and obtained my master's degree in AI & Digital Media from Hong Kong Baptist University.I am currently seeking job opportunities. If you're interested, feel free to contact me anytime!<br>    
+            <p>欢迎来到我的个人作品集网站！我是一位充满热情的3D设计者，致力于打造沉浸式且视觉震撼的作品。对我而言，每一个瞬间都是通过创意与创新将当下化为三维呈现、尽情把握当下的机会。
+            <br>我的本科毕业于北京工业大学数字媒体技术专业，硕士毕业于香港浸会大学AI & Digital Media专业，目前正在寻求工作中，如感兴趣，欢迎随时与我联络！<br>  </p>
             <div class="buttons">
                 <a href="#" class="btn black" id="about-link">About Me</a>
                 <a href="Wang, Yi-Hsiang Portfolio.pdf" target="_blank" class="btn white">Portfolio</a>
@@ -33,7 +381,7 @@
         </div>
 
         <div class="intro-image">
-            <img src="jpg\profile.jpg" alt="Designer">
+            <img src="jpg/profile.jpg" alt="Designer">
         </div>
     </section>
 
@@ -43,15 +391,15 @@
             <!-- Photoshop -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\ps.png" alt="Photoshop Logo">
+                    <img src="jpg/ps.png" alt="Photoshop Logo">
                     <h3>Photoshop</h3>
-                    <p>The world’s best imaging and graphic design software.</p>
+                    <p>The world's best imaging and graphic design software.</p>
                 </div>
             </div>
             <!-- Premiere Pro -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\pr.png" alt="Premiere Pro Logo">
+                    <img src="jpg/pr.png" alt="Premiere Pro Logo">
                     <h3>Premiere Pro</h3>
                     <p>Industry-leading video editing software for film, TV, and web.</p>
                 </div>
@@ -59,7 +407,7 @@
             <!-- After Effects -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\ae.png" alt="After Effects Logo">
+                    <img src="jpg/ae.png" alt="After Effects Logo">
                     <h3>After Effects</h3>
                     <p>Professional motion graphics and visual effects software.</p>
                 </div>
@@ -67,7 +415,7 @@
             <!-- Substance Painter -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\pt.png" alt="SP Logo">
+                    <img src="jpg/pt.png" alt="SP Logo">
                     <h3>Painter</h3>
                     <p>A 3D texturing tool for creating realistic and detailed materials.</p>
                 </div>
@@ -75,7 +423,7 @@
             <!-- Maya -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\maya.png" alt="Maya Logo">
+                    <img src="jpg/maya.png" alt="Maya Logo">
                     <h3>Maya</h3>
                     <p>Industry-standard software for 3D animation, modeling, and simulation.</p>
                 </div>
@@ -83,7 +431,7 @@
             <!-- Blender -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\blender.png" alt="Blender Logo">
+                    <img src="jpg/blender.png" alt="Blender Logo">
                     <h3>Blender</h3>
                     <p>A powerful 3D creation suite for modeling, animation, and rendering.</p>
                 </div>
@@ -91,7 +439,7 @@
             <!-- Unity -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\unity.png" alt="Unity 3D Logo">
+                    <img src="jpg/unity.png" alt="Unity 3D Logo">
                     <h3>Unity 3D</h3>
                     <p>A versatile game engine for creating immersive 3D experiences.</p>
                 </div>
@@ -99,7 +447,7 @@
             <!-- Unreal Engine -->
             <div class="software-item">
                 <div class="software-card">
-                    <img src="jpg\unreal.png" alt="Unreal Engine Logo">
+                    <img src="jpg/unreal.png" alt="Unreal Engine Logo">
                     <h3>Unreal Engine</h3>
                     <p>A cutting-edge real-time 3D creation tool for games and more.</p>
                 </div>
@@ -107,17 +455,94 @@
         </div>
     </section>
 
+
+    <section class="showcase-section">
+        <h2 class="showcase-title">Latest Creations 最近创作</h2>
+        
+        <div class="showcase-container">
+            <!-- 卡片 1：图片 - 点击放大 -->
+            <div class="showcase-card" id="img-card-1" data-type="image" data-src="jpg\情感对话游戏.png" data-title="游戏" data-subtitle="Unity · AI">
+                <div class="showcase-tag">Game</div>
+                <img src="jpg\情感对话游戏.png" alt="3D Scene 1">
+                <div class="play-icon">▶</div>
+                <div class="showcase-overlay">
+                    <h3>AI情感对话游戏</h3>
+                    <p>Unity3D ·  AI</p>
+                </div>
+            </div>
+            
+            <!-- 卡片 2：视频 - 点击弹出播放 -->
+            <div class="showcase-card" id="video-card-1" data-type="video" data-src="video5\castle_1.mp4" data-title="遗迹" data-subtitle="Blender · 动画渲染">
+                <div class="showcase-tag">Animation</div>
+                <video muted loop>
+                    <source src="video5\castle_1.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon">▶</div>
+                <div class="showcase-overlay">
+                    <h3>遗迹</h3>
+                    <p>Blender · 动画渲染</p>
+                </div>
+            </div>
+            
+            <!-- 卡片 3：视频 - 点击弹出播放 -->
+            <div class="showcase-card" id="video-card-2" data-type="video" data-src="video3\救护车场景2.mp4" data-title="城市写实" data-subtitle="Blender · 案例练习">
+                <div class="showcase-tag">Lighting</div>
+                <video muted loop>
+                    <source src="video3\救护车场景2.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon">▶</div>
+                <div class="showcase-overlay">
+                    <h3>城市写实</h3>
+                    <p>Blender ·  案例练习</p>
+                </div>
+            </div>
+            
+            <!-- 卡片 4：视频 - 点击弹出播放 -->
+            <div class="showcase-card" id="video-card-3" data-type="video" data-src="video4\乡村调色.mp4" data-title="乡村场景" data-subtitle="Blender · 案例练习">
+                <div class="showcase-tag">ANIMATION</div>
+                <video muted loop>
+                    <source src="video4\乡村调色.mp4" type="video/mp4">
+                </video>
+                <div class="play-icon">▶</div>
+                <div class="showcase-overlay">
+                    <h3>乡村场景</h3>
+                    <p>Blender ·  案例练习</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Info -->
     <div id="contact-info" class="contact-info">
-        <p>📧 Email: 24466034@life.hkbu.edu.hk</p>
-        <p>📞 Phone: +852 59562006</p>
-        <p>📍 Location: Hong Kong Baptist University</p>
+        <p>📧 Email: wangyihsiang01@163.com</p>
+        <p>📞 Phone: +86 15622856590</p>
+        <p>📍 Location: Shenzhen/Beijing</p>
+    </div>
+
+    <!-- 图片灯箱 -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-close" id="lightboxClose">&times;</div>
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightboxImage" src="" alt="">
+        </div>
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <!-- 视频弹出层 -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-close" id="videoModalClose">&times;</div>
+        <div class="video-modal-content">
+            <video id="modalVideo" controls>
+                <source src="" type="video/mp4">
+            </video>
+        </div>
+        <div class="video-modal-caption" id="videoModalCaption"></div>
     </div>
 
     <script>
         // 平滑滚动 Contact Info
         document.getElementById('contact-link').addEventListener('click', function (e) {
-            e.preventDefault(); // 阻止默认跳转行为
+            e.preventDefault();
             document.getElementById('contact-info').scrollIntoView({
                 behavior: 'smooth' 
             });
@@ -130,6 +555,110 @@
                 top: 0, 
                 behavior: 'smooth' 
             });
+        });
+        
+        // 为作品卡片添加悬停播放效果
+        const videoCards = document.querySelectorAll('.showcase-card video');
+        
+        videoCards.forEach(video => {
+            video.addEventListener('mouseenter', function() {
+                this.play();
+            });
+            
+            video.addEventListener('mouseleave', function() {
+                this.pause();
+                this.currentTime = 0;
+            });
+        });
+        
+        // ===== 点击查看效果 =====
+        // 获取所有展示卡片
+        const showcaseCards = document.querySelectorAll('.showcase-card');
+        
+        // 图片灯箱元素
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const lightboxClose = document.getElementById('lightboxClose');
+        
+        // 视频弹窗元素
+        const videoModal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const videoModalCaption = document.getElementById('videoModalCaption');
+        const videoModalClose = document.getElementById('videoModalClose');
+        
+        // 为每个卡片添加点击事件
+        showcaseCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const type = this.dataset.type;
+                const src = this.dataset.src;
+                const title = this.dataset.title;
+                const subtitle = this.dataset.subtitle;
+                
+                if (type === 'image') {
+                    // 打开图片灯箱
+                    lightboxImage.src = src;
+                    lightboxCaption.innerHTML = `${title} · ${subtitle}`;
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                } else if (type === 'video') {
+                    // 打开视频弹窗
+                    const videoSource = modalVideo.querySelector('source');
+                    videoSource.src = src;
+                    modalVideo.load(); // 重新加载视频
+                    videoModalCaption.innerHTML = `${title} · ${subtitle}`;
+                    videoModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 自动播放
+                    modalVideo.play().catch(e => console.log('自动播放被阻止:', e));
+                }
+            });
+        });
+        
+        // 关闭图片灯箱
+        lightboxClose.addEventListener('click', function() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // 点击背景关闭图片灯箱
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // 关闭视频弹窗
+        videoModalClose.addEventListener('click', function() {
+            videoModal.classList.remove('active');
+            modalVideo.pause(); // 暂停视频
+            document.body.style.overflow = '';
+        });
+        
+        // 点击背景关闭视频弹窗
+        videoModal.addEventListener('click', function(e) {
+            if (e.target === videoModal) {
+                videoModal.classList.remove('active');
+                modalVideo.pause();
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // 键盘ESC关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (lightbox.classList.contains('active')) {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+                if (videoModal.classList.contains('active')) {
+                    videoModal.classList.remove('active');
+                    modalVideo.pause();
+                    document.body.style.overflow = '';
+                }
+            }
         });
     </script>
 </body>
